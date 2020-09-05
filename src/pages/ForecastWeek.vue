@@ -1,21 +1,25 @@
 <template>
 	<div>
-
+		<Weather v-for="(forecast, i) in forecasts" :key="i"
+			:icon="forecast.icon"
+			:localizacao="forecast.localizacao"
+			:regiao="forecast.regiao"
+			:temperatura="forecast.temperatura"
+		/>
 	</div>
 </template>
 
 <script>
 import openWeatherService from "../services/openWeatherMap";
+import Weather from "../components/Weather.vue";
 export default {
 	name: "ForecastWeek",
+	components: {
+		Weather,
+	},
 	data: function() {
 		return {
-			localizacao: "",
-			regiao: "",
-			temperatura: "",
-			unidadeMedida: {},
-			apisKeys: [],
-			icon: "",
+			forecasts: [],
 			units: [
 				{name: "metric", symbol : "ºC"}, 
 				{name:"imperial", symbol:"ºF"},
@@ -28,35 +32,32 @@ export default {
 		},
 	},
 	methods: {
-		getWeather(unit, iconSize) {
+		getForecastWeek(unit, iconSize) {
 			let self = this;
-			navigator.geolocation.getCurrentPosition(
-				(pos) => {
-					openWeatherService
-						.getWeather(pos.coords.latitude, pos.coords.longitude, unit.name)
-						.then(function(data) {
-							self.temperatura = `${data.main.temp.toFixed(1)} ${unit.symbol}`;
-							self.localizacao = data.name;
-							self.regiao = data.sys.country;
+			navigator.geolocation.getCurrentPosition((pos) => {
+				openWeatherService
+					.getForecastWeek(pos.coords.latitude, pos.coords.longitude, unit.name, 10)
+					.then((data) => {
+						data.list.forEach((data, i) => {
+							self.forecasts[i].localizacao = data.name;
+							self.forecasts[i].regiao = data.sys.country;
+							self.forecasts[i].temperatura = `${data.main.temp.toFixed(1)} ${unit.symbol}`;
+						
 							openWeatherService
 								.getIcon(data.weather[0].icon, iconSize)
-								.then(function(icon) {
-									self.icon = icon.url;
+								.then((data) => {
+									self.icon = data.url;
 								});
 						});
-				},
-				(err) => {
-					console.log(err);
-				}
-			);
+					});
+			});
 		},
 	},
 	created() {
-		this.getWeather(this.units[0], 4);
+		this.getForecastWeek(this.units[1], 2);
 	},
-}
+};
 </script>
 
 <style>
-
 </style>
