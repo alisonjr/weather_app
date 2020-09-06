@@ -1,7 +1,7 @@
 const urlWeather = "https://api.openweathermap.org/data/2.5/weather?";
 const urlForecastWeek =
 	"https://api.openweathermap.org/data/2.5/forecast/daily?";
-const urlIcon = "http://openweathermap.org/img/wn";
+const urlIcon = "https://openweathermap.org/img/wn";
 const apiKeys = [
 	"95b11822eb429c84c1143a19251b1881",
 	"95b11822eb429c84c1143a19251b1881",
